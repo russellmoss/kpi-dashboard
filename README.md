@@ -3,9 +3,10 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4.5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-2.39.7-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 
-A modern, real-time KPI dashboard built for Milea Estate Vineyard to track business performance, staff metrics, and generate AI-powered insights.
+A modern, real-time KPI dashboard built for Milea Estate Vineyard to track business performance, staff metrics, and generate AI-powered insights. Uses MongoDB for data storage and Supabase for authentication.
 
 ## ✨ Features
 
@@ -38,7 +39,8 @@ A modern, real-time KPI dashboard built for Milea Estate Vineyard to track busin
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Supabase account
+- MongoDB database
+- Supabase account (for authentication)
 - Commerce7 API access
 
 ### Installation
@@ -57,7 +59,10 @@ A modern, real-time KPI dashboard built for Milea Estate Vineyard to track busin
 3. **Environment Setup**
    Create a `.env.local` file in the root directory:
    ```env
-   # Supabase Configuration
+   # MongoDB Configuration
+   MONGODB_URI=your_mongodb_connection_string
+
+   # Supabase Configuration (Authentication)
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -78,8 +83,8 @@ A modern, real-time KPI dashboard built for Milea Estate Vineyard to track busin
 
 4. **Database Setup**
    ```bash
-   # Run database migrations (if applicable)
-   npm run db:migrate
+   # Ensure MongoDB is running and accessible
+   # The app will automatically create collections as needed
    ```
 
 5. **Start Development Server**
@@ -110,7 +115,8 @@ kpi-dashboard/
 │   ├── StaffPerformanceTable.tsx # Staff metrics
 │   └── AIInsightsPanel.tsx # AI insights display
 ├── lib/                  # Utility libraries
-│   ├── supabase/        # Database client
+│   ├── mongodb/         # MongoDB client
+│   ├── supabase/        # Authentication client
 │   ├── commerce7/       # Commerce7 integration
 │   ├── ai/              # AI services
 │   ├── email/           # Email services
@@ -201,7 +207,6 @@ npm run lint         # Run ESLint
 npm run format       # Format code with Prettier
 
 # Database
-npm run db:migrate   # Run database migrations
 npm run db:seed      # Seed database with sample data
 ```
 
@@ -209,16 +214,17 @@ npm run db:seed      # Seed database with sample data
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | ✅ |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | ✅ |
+| `MONGODB_URI` | MongoDB connection string | ✅ |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (authentication) | ✅ |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (authentication) | ✅ |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (authentication) | ✅ |
 | `COMMERCE7_API_KEY` | Commerce7 API key | ✅ |
 | `COMMERCE7_CLIENT_ID` | Commerce7 client ID | ✅ |
 | `COMMERCE7_CLIENT_SECRET` | Commerce7 client secret | ✅ |
 | `ANTHROPIC_API_KEY` | Anthropic Claude API key | ✅ |
-| `RESEND_API_KEY` | Resend email API key | ❌ |
-| `TWILIO_ACCOUNT_SID` | Twilio account SID | ❌ |
-| `TWILIO_AUTH_TOKEN` | Twilio auth token | ❌ |
+| `RESEND_API_KEY` | Resend email API key | ✅ |
+| `TWILIO_ACCOUNT_SID` | Twilio account SID | ✅ |
+| `TWILIO_AUTH_TOKEN` | Twilio auth token | ✅ |
 
 ## 🎯 Key Features Explained
 
@@ -245,11 +251,16 @@ The AI system analyzes:
 
 ## 🔧 Configuration
 
-### Supabase Setup
+### MongoDB Setup
+1. Set up a MongoDB database (local or cloud)
+2. Configure the connection string in your environment variables
+3. The app will automatically create collections as needed
+
+### Supabase Setup (Authentication)
 1. Create a new Supabase project
-2. Set up the required tables (see `implementation.md`)
-3. Configure Row Level Security (RLS)
-4. Set up database triggers for real-time updates
+2. Configure authentication settings
+3. Set up user management and roles
+4. Configure Row Level Security (RLS) for user access control
 
 ### Commerce7 Integration
 1. Obtain API credentials from Commerce7
@@ -259,7 +270,7 @@ The AI system analyzes:
 
 ## 📊 Database Schema
 
-### Key Tables
+### Key Collections
 - `kpi_daily_snapshots`: Daily KPI aggregations
 - `orders`: Individual order records
 - `guests`: Customer information
